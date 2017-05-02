@@ -1,0 +1,114 @@
+---
+_info:
+    title: Manage systemd via file system
+    desc: |
+        Manage systemd services, timers, etc directly via filesystem,
+        this makes it so that we can manage systemd on an offline OS
+        which disk/sd card we have mounted.
+service:
+    _env:
+        - root:
+            value: ${root:-/}
+            title: The filesystem root directory
+            desc: |
+                When mounted a sd card or similar set this to the mount point of the root partition.
+    list:
+        _info:
+            title: List all enabled services
+        _env:
+            - RUN: SYSTEMD_LIST_ENABLED -- "${root}" "multi-user"
+    create:
+        _info:
+            title: Add systemd service to file system
+            desc: |
+                This node will create a systemd unit service directly in the filesystem
+                Since this node does not use systemd to do this it can be targeted
+                towards a mounted external filesystem, e.g. a sd card.
+        _env:
+            - service:
+                title: Name of service to create/alter
+            - description:
+                title: One line description of the service
+            - execstart:
+                title: Path to excutable
+            - RUN: SYSTEMD_CREATE_SERVICE -- "${root}" "${service}" "${description}" "${execstart}"
+    enable:
+        _info:
+            title: Enable a systemd service
+            desc: |
+                Creates symlink which enables the service
+        _env:
+            - service:
+                title: Name of service to service
+            - RUN: SYSTEMD_ENABLE -- "${root}" "${service}" "1" "service" "multi-user"
+    disable:
+        _info:
+            title: Disable a systemd service
+            desc: |
+                Removes symlink which disables the service
+        _env:
+            - service:
+                title: Name of service to disable
+            - RUN: SYSTEMD_ENABLE -- "${root}" "${service}" "0" "service" "multi-user"
+timer:
+    _env:
+        - root:
+            value: ${root:-/}
+            title: The filesystem root directory
+            desc: |
+                When mounted a sd card or similar set this to the mount point of the root partition.
+    list:
+        _info:
+            title: List all enabled timers
+        _env:
+            - RUN: SYSTEMD_LIST_ENABLED -- "${root}" "timers"
+    create:
+        _info:
+            title: Add systemd timer to file system
+            desc: |
+                This node will create a systemd unit timer directly in the filesystem
+                Since this node does not use systemd to do this it can be targeted
+                towards a mounted external filesystem, e.g. a sd card.
+        _env:
+            - timer:
+                title: Name of timer to create/alter
+                desc: |
+                    The name of the service and the timer are the same.
+            - description:
+                title: One line description of the timer
+            - persistent:
+                title: Persistent means to count offline time and run on startup
+                value: ${persistent:-false}
+            - oncalendar:
+                title: Realtime timer
+                values:
+                    - minutely
+                    - hourly
+                    - daily
+                    - weekly
+                    - monthly
+            - RUN: SYSTEMD_CREATE_TIMER -- "${root}" "${timer}" "${description}" "${persistent}" "${oncalendar}"
+    enable:
+        _info:
+            title: Enable a systemd timer
+            desc: |
+                Creates symlink which enables the timer
+        _env:
+            - timer:
+                title: Name of timer to enable
+            - RUN: SYSTEMD_ENABLE -- "${root}" "${timer}" "1" "timer" "timers"
+    disable:
+        _info:
+            title: Disable a systemd timer
+            desc: |
+                Removes symlink which disables the timer
+        _env:
+            - root:
+                value: ${root:-/}
+                title: The filesystem root directory
+                desc: |
+                    When mounted a sd card or similar set this to the mount point.
+            - timer:
+                title: Name of timer to disable
+            - RUN: SYSTEMD_ENABLE -- "${root}" "${timer}" "0" "timer" "timers"
+...
