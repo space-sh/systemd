@@ -62,7 +62,7 @@ WantedBy=multi-user.target
         return 1
     fi
     if [ ! -f "${root}${execstart}" ]; then
-        PRINT "ExecStart executable does not exist: ${execstart}." "warning"
+        PRINT "ExecStart executable does not exist: ${root}${execstart}." "warning"
     fi
 }
 
@@ -182,12 +182,12 @@ SYSTEMD_ENABLE()
             ;;
     esac
 
-    local path="${root}/lib/systemd/system/${unit}.${type}"
+    local path="/lib/systemd/system/${unit}.${type}"
 
     if [ "${enable}" = "1" ]; then
         PRINT "Enable ${unit}.${type}"
-        if [ ! -f "${path}" ]; then
-            PRINT "Unit does not exist: ${path}." "error"
+        if [ ! -f "${root}${path}" ]; then
+            PRINT "Unit does not exist: ${root}${path}." "error"
             return 1
         fi
         if [ ! -d "${root}/etc/systemd/system/${target}.target.wants" ]; then
@@ -195,10 +195,14 @@ SYSTEMD_ENABLE()
             ${SUDO} chmod 755 "${root}/etc/systemd/system/${target}.target.wants" ||
             { PRINT "Could not create ${root}/etc/systemd/system/${target}.target.wants." "error"; return 1; }
         fi
-        ${SUDO} ln -sf "${path}" "${root}/etc/systemd/system/${target}.target.wants/${unit}.${type}"
+        ${SUDO} ln -sfT "${path}" "${root}/etc/systemd/system/${target}.target.wants/${unit}.${type}"
     else
-        PRINT "Disable unit ${unit}.${type}"
-        ${SUDO} rm -f "${root}/etc/systemd/system/${target}.target.wants/${unit}.${type}"
+        if [ ! -f "${root}/etc/systemd/system/${target}.target.wants/${unit}.${type}" ]; then
+            PRINT "Unit ${unit}.${type} not active" "warning"
+        else
+            PRINT "Disable unit ${unit}.${type}"
+            ${SUDO} rm -f "${root}/etc/systemd/system/${target}.target.wants/${unit}.${type}"
+        fi
     fi
 }
 
