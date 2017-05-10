@@ -10,9 +10,6 @@
 #   $4: execstart
 #   $5: enable
 #
-# Expects:
-#   $SUDO: if not run as root set `SUDO=sudo`
-#
 # Returns:
 #   0: success
 #   1: failure
@@ -22,7 +19,6 @@ SYSTEMD_CREATE_SERVICE()
 {
     SPACE_SIGNATURE="root service description execstart"
     SPACE_DEP="PRINT"
-    SPACE_ENV="SUDO=${SUDO-}"
 
     local root="${1}"
     shift
@@ -56,7 +52,7 @@ WantedBy=multi-user.target
     local path="${root}/lib/systemd/system/${service}.service"
 
     PRINT "Write service file to: ${path}"
-    printf "%s\n" "${servicecontents}" | ${SUDO} tee ${path} >/dev/null
+    printf "%s\n" "${servicecontents}" | tee ${path} >/dev/null
     if [ "$?" -gt 0 ]; then
         PRINT "Could not write file, you need to be root/sudo." "error"
         return 1
@@ -78,9 +74,6 @@ WantedBy=multi-user.target
 #   $4: persistent
 #   $5: oncalendar
 #
-# Expects:
-#   $SUDO: if not run as root set `SUDO=sudo`
-#
 # Returns:
 #   0: success
 #   1: failure
@@ -90,7 +83,6 @@ SYSTEMD_CREATE_TIMER()
 {
     SPACE_SIGNATURE="root timer description persistent oncalendar"
     SPACE_DEP="PRINT"
-    SPACE_ENV="SUDO=${SUDO-}"
 
     local root="${1}"
     shift
@@ -128,7 +120,7 @@ WantedBy=timers.target
     local path="${root}/lib/systemd/system/${timer}.timer"
 
     PRINT "Write timer file to: ${path}"
-    printf "%s\n" "${servicecontents}" | ${SUDO} tee ${path} >/dev/null
+    printf "%s\n" "${servicecontents}" | tee ${path} >/dev/null
     if [ "$?" -gt 0 ]; then
         PRINT "Could not write file, you need to be root/sudo." "error"
         return 1
@@ -147,9 +139,6 @@ WantedBy=timers.target
 #   $4: type: service, timer, etc
 #   $5: target: default, multi-user, timers, etc
 #
-# Expects:
-#   $SUDO: if not run as root set `SUDO=sudo`
-#
 # Returns:
 #   0: success
 #   1: failure
@@ -159,7 +148,6 @@ SYSTEMD_ENABLE()
 {
     SPACE_SIGNATURE="root unit enable type target"
     SPACE_DEP="PRINT"
-    SPACE_ENV="SUDO=${SUDO-}"
 
     local root="${1}"
     shift
@@ -191,17 +179,17 @@ SYSTEMD_ENABLE()
             return 1
         fi
         if [ ! -d "${root}/etc/systemd/system/${target}.target.wants" ]; then
-            ${SUDO} mkdir "${root}/etc/systemd/system/${target}.target.wants" &&
-            ${SUDO} chmod 755 "${root}/etc/systemd/system/${target}.target.wants" ||
+            mkdir "${root}/etc/systemd/system/${target}.target.wants" &&
+            chmod 755 "${root}/etc/systemd/system/${target}.target.wants" ||
             { PRINT "Could not create ${root}/etc/systemd/system/${target}.target.wants." "error"; return 1; }
         fi
-        ${SUDO} ln -sfT "${path}" "${root}/etc/systemd/system/${target}.target.wants/${unit}.${type}"
+        ln -sfT "${path}" "${root}/etc/systemd/system/${target}.target.wants/${unit}.${type}"
     else
         if [ ! -f "${root}/etc/systemd/system/${target}.target.wants/${unit}.${type}" ]; then
             PRINT "Unit ${unit}.${type} not active" "warning"
         else
             PRINT "Disable unit ${unit}.${type}"
-            ${SUDO} rm -f "${root}/etc/systemd/system/${target}.target.wants/${unit}.${type}"
+            rm -f "${root}/etc/systemd/system/${target}.target.wants/${unit}.${type}"
         fi
     fi
 }
@@ -215,9 +203,6 @@ SYSTEMD_ENABLE()
 #   $1: root fs path
 #   $2: target: default, multi-user, timers, etc
 #
-# Expects:
-#   $SUDO: if not run as root set `SUDO=sudo`
-#
 # Returns:
 #   0: success
 #   1: failure
@@ -227,7 +212,6 @@ SYSTEMD_LIST_ENABLED()
 {
     SPACE_SIGNATURE="root target"
     SPACE_DEP="PRINT"
-    SPACE_ENV="SUDO=${SUDO-}"
 
     local root="${1}"
     shift
@@ -241,5 +225,5 @@ SYSTEMD_LIST_ENABLED()
             ;;
     esac
 
-    ${SUDO} ls "${root}/etc/systemd/system/${target}.target.wants"
+    ls "${root}/etc/systemd/system/${target}.target.wants"
 }
