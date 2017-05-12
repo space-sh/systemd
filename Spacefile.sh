@@ -52,7 +52,7 @@ WantedBy=multi-user.target
     local path="${root}/lib/systemd/system/${service}.service"
 
     PRINT "Write service file to: ${path}"
-    printf "%s\n" "${servicecontents}" | tee ${path} >/dev/null
+    printf "%s\n" "${servicecontents}" | tee "${path}" >/dev/null
     if [ "$?" -gt 0 ]; then
         PRINT "Could not write file, you need to be root/sudo." "error"
         return 1
@@ -120,7 +120,7 @@ WantedBy=timers.target
     local path="${root}/lib/systemd/system/${timer}.timer"
 
     PRINT "Write timer file to: ${path}"
-    printf "%s\n" "${servicecontents}" | tee ${path} >/dev/null
+    printf "%s\n" "${servicecontents}" | tee "${path}" >/dev/null
     if [ "$?" -gt 0 ]; then
         PRINT "Could not write file, you need to be root/sudo." "error"
         return 1
