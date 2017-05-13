@@ -14,6 +14,10 @@
 # limitations under the License.
 #
 
+
+# Disable warning about local keyword
+# shellcheck disable=2039
+
 #=======================
 # SYSTEMD_CREATE_SERVICE
 #
@@ -77,6 +81,10 @@ WantedBy=multi-user.target
         PRINT "ExecStart executable does not exist: ${root}${execstart}." "warning"
     fi
 }
+
+
+# Disable warning about local keyword
+# shellcheck disable=2039
 
 #=======================
 # SYSTEMD_CREATE_TIMER
@@ -142,6 +150,10 @@ WantedBy=timers.target
         return 1
     fi
 }
+
+
+# Disable warning about local keyword
+# shellcheck disable=2039
 
 #=======================
 # SYSTEMD_ENABLE
@@ -209,6 +221,10 @@ SYSTEMD_ENABLE()
         fi
     fi
 }
+
+
+# Disable warning about local keyword
+# shellcheck disable=2039
 
 #=======================
 # SYSTEMD_LIST_ENABLED
