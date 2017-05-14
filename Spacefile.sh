@@ -17,6 +17,8 @@
 
 # Disable warning about local keyword
 # shellcheck disable=2039
+# Disable warning about indirectly checking status code
+# shellcheck disable=SC2181
 
 #=======================
 # SYSTEMD_CREATE_SERVICE
@@ -85,6 +87,8 @@ WantedBy=multi-user.target
 
 # Disable warning about local keyword
 # shellcheck disable=2039
+# Disable warning about indirectly checking status code
+# shellcheck disable=SC2181
 
 #=======================
 # SYSTEMD_CREATE_TIMER
