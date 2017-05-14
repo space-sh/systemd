@@ -246,7 +246,9 @@ SYSTEMD_ENABLE()
 #=======================
 SYSTEMD_LIST_ENABLED()
 {
+    # shellcheck disable=2034
     SPACE_SIGNATURE="root target"
+    # shellcheck disable=2034
     SPACE_DEP="PRINT"
 
     local root="${1}"
