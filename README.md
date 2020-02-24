@@ -1,4 +1,4 @@
-# Manage systemd via file system | [![build status](https://gitlab.com/space-sh/systemd/badges/master/build.svg)](https://gitlab.com/space-sh/systemd/commits/master)
+# Manage systemd via file system | [![build status](https://gitlab.com/space-sh/systemd/badges/master/pipeline.svg)](https://gitlab.com/space-sh/systemd/commits/master)
 
 Manage systemd services, timers, etc directly via filesystem,
 this makes it so that we can manage systemd on an offline OS
